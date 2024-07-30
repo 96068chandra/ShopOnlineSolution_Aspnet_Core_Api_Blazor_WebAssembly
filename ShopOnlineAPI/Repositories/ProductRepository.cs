@@ -21,9 +21,10 @@ namespace ShopOnlineAPI.Repositories
 
         }
 
-        public Task<ProductCategory> GetCategory(int id)
+        public async Task<ProductCategory> GetCategory(int id)
         {
-            throw new NotImplementedException();
+            var category=await context.ProductCategories.FindAsync(id);
+            return category;
         }
 
         public async Task<IEnumerable<Product>> GetItems()
@@ -33,9 +34,10 @@ namespace ShopOnlineAPI.Repositories
 
         }
 
-        public Task<Product> GetProduct(int id)
+        public async Task<Product> GetProduct(int id)
         {
-            throw new NotImplementedException();
+            var product= await context.Products.FindAsync(id);
+            return product;
         }
     }
 }
