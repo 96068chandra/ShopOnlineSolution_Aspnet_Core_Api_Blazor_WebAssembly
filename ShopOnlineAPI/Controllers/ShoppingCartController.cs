@@ -34,7 +34,7 @@ namespace ShopOnlineAPI.Controllers
                 {
                     throw new Exception("No Products Exist in the System");
                 }
-               var cartItemsDto=cartItems.ConvertDto(products);
+                var cartItemsDto = cartItems.ConvertDto(products);
                 return Ok(cartItemsDto);
             }
 
@@ -50,15 +50,17 @@ namespace ShopOnlineAPI.Controllers
             try
             {
                 var carttem = await this.shoppingCartRepository.GetItem(id);
-                if (carttem == null) return NotFound();
+                if (carttem == null) 
+                    return NotFound();
                 var product = await this.productRepository.GetProduct(carttem.ProductId);
-                if (product == null) return NotFound();
-                var cartItemDto=carttem.ConvertDto(product);
+                if (product == null) 
+                    return NotFound();
+                var cartItemDto = carttem.ConvertDto(product);
                 return Ok(cartItemDto);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
 
             }
         }
@@ -69,16 +71,65 @@ namespace ShopOnlineAPI.Controllers
             try
             {
                 var newCartItem = await this.shoppingCartRepository.AddItem(item);
-                if(newCartItem == null) return NotFound();
-                var product=await productRepository.GetProduct(newCartItem.ProductId);
-                if (product == null) throw new Exception($"Something went wrong when attempting to retrive a product(productId:({item.ProductId})");
-                var newCartItemDto=newCartItem.ConvertDto(product);
+                if (newCartItem == null) 
+                    return NotFound();
+                var product = await productRepository.GetProduct(newCartItem.ProductId);
+                if (product == null) 
+                    throw new Exception($"Something went wrong when attempting to retrive a product(productId:({item.ProductId})");
+                var newCartItemDto = newCartItem.ConvertDto(product);
                 return CreatedAtAction(nameof(GetItem), new { id = newCartItemDto.Id }, newCartItemDto);
-            }catch (Exception ex)
+            } catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
 
             }
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult<CartItemDto>> DeleteItem(int id) 
+        {
+            try
+            {
+                var cartItem=await this.shoppingCartRepository.DeleteItem(id);
+                if (cartItem == null) 
+                    return NotFound();
+                var product=await productRepository.GetProduct(cartItem.ProductId);
+                if (product == null) 
+                    return NotFound();
+                var cartItemDto = cartItem.ConvertDto(product);
+                return Ok(cartItemDto);
+
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult<CartItemDto>> UpdateQty(int id,CartItemQtyUpdateDto cartItemQtyUpdateDto)
+        {
+            try
+            {
+
+          
+            var cartItem=await this.shoppingCartRepository.UpdateQty(id,cartItemQtyUpdateDto);
+            if(cartItem == null) return NotFound();
+            var product=await productRepository.GetProduct(cartItem.ProductId); 
+            var cartItemDto= cartItem.ConvertDto(product);
+            return Ok(cartItemDto);
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+
+
+        }
+
+
     }
+
+    
 }

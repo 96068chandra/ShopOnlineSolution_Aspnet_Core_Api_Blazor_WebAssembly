@@ -1,5 +1,7 @@
-﻿using ShopOnline.Models.Dtos;
+﻿using Newtonsoft.Json;
+using ShopOnline.Models.Dtos;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace ShopOnlineWeb.Services.Contracts
 {
@@ -40,9 +42,25 @@ namespace ShopOnlineWeb.Services.Contracts
             }
         }
 
-        
+        public async Task<CartItemDto> DeleteItem(int id)
+        {
+            try
+            {
+                var response = await client.DeleteAsync($"api/ShoppingCart/{id}");
+                if(response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<CartItemDto>();
 
-        public async Task<IEnumerable<CartItemDto>> GetCartItems(int userid)
+                }
+                return default(CartItemDto);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<CartItemDto>> GetCartItems(int userid)
         {
             try
             {
@@ -51,10 +69,10 @@ namespace ShopOnlineWeb.Services.Contracts
                 {
                     if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
                     {
-                        return Enumerable.Empty<CartItemDto>();
+                        return Enumerable.Empty<CartItemDto>().ToList();
 
                     }
-                    return await response.Content.ReadFromJsonAsync<IEnumerable<CartItemDto>>();
+                    return await response.Content.ReadFromJsonAsync<List<CartItemDto>>();
 
                 }
                 else
@@ -67,6 +85,28 @@ namespace ShopOnlineWeb.Services.Contracts
             {
                 throw new NotImplementedException();
 
+            }
+        }
+
+        public async Task<CartItemDto> UpdateQty(CartItemQtyUpdateDto quantityUpdateDto)
+        {
+            try
+            {
+                var jsonRequest=JsonConvert.SerializeObject(quantityUpdateDto);
+                var content=new StringContent(jsonRequest,Encoding.UTF8,"application/json-patch+json");
+                var response = await client.PatchAsync($"api/ShoppingCart/{quantityUpdateDto.CartItemId}", content);
+                if(response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<CartItemDto>();
+
+                }
+                return null;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
     }

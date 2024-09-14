@@ -2,8 +2,9 @@
 using ShopOnline.Models.Dtos;
 using ShopOnlineAPI.Data;
 using ShopOnlineAPI.Entities;
+using ShopOnlineAPI.Repositories.Contracts;
 
-namespace ShopOnlineAPI.Repositories.Contracts
+namespace ShopOnlineAPI.Repositories
 {
     public class ShoppingCartRepository : IShoppingCartRepository
     {
@@ -44,9 +45,19 @@ namespace ShopOnlineAPI.Repositories.Contracts
             
         }
 
-        public Task<CartItem> DeleteItem(int id)
+        public async Task<CartItem> DeleteItem(int id)
         {
-            throw new NotImplementedException();
+            var item = await this.context.CartItems.FindAsync(id);
+            if(item != null)
+            {
+                this.context.CartItems.Remove(item);
+                await this.context.SaveChangesAsync();  
+
+
+            }
+            return item;
+
+
         }
 
         public async Task<IEnumerable<CartItem>> GetAll(int userId)
@@ -81,9 +92,17 @@ namespace ShopOnlineAPI.Repositories.Contracts
                           }).SingleOrDefaultAsync();
         }
 
-        public Task<CartItem> UpdateQty(int id, CartItemQtyUpdateDto cartItemQtyUpdateDto)
+        public async Task<CartItem> UpdateQty(int id, CartItemQtyUpdateDto cartItemQtyUpdateDto)
         {
-            throw new NotImplementedException();
+            var item=await this.context.CartItems.FindAsync(id);
+            if(item!=null)
+            {
+                item.Qty=cartItemQtyUpdateDto.Qty;
+                await this.context.SaveChangesAsync();  
+                return item;
+
+            }
+            return null;
         }
     }
 }
