@@ -21,7 +21,7 @@ namespace ShopOnlineAPI.Extensions
                         Qty= product.Qty,
                         CategoryId= category.Id,
                         CategoryName= category.Name,
-
+                        Price= product.Price,
                     }).ToList();
         }
 
@@ -37,6 +37,7 @@ namespace ShopOnlineAPI.Extensions
                         Qty = product.Qty,
                         CategoryId = category.Id,
                         CategoryName = category.Name,
+                        Price= product.Price,
 
                     };
         }
@@ -56,7 +57,9 @@ namespace ShopOnlineAPI.Extensions
                         ProductImageURL=product.ImageURL
                         ,CartId=cartItem.CartId,
                         Qty=cartItem.Qty,
-                        TotalPrice=product.Price
+                        Price=product.Price,
+                        TotalPrice=product.Price*cartItem.Qty,
+
 
                     }).ToList();
         }
@@ -72,7 +75,9 @@ namespace ShopOnlineAPI.Extensions
                 ProductImageURL = product.ImageURL,
                 CartId = cartItem.CartId,
                 Qty = cartItem.Qty,
-                TotalPrice = product.Price
+                Price = product.Price,
+                TotalPrice= product.Price*cartItem.Qty,
+                
 
 
             };
